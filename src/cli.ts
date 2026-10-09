@@ -49,7 +49,7 @@ export function parseCliArgs(args: string[]) {
 }
 
 export function printHelp() {
-  console.info("Usage:", code("workspace [options] [repositories...]"));
+  console.info("Usage:", code("workspace [options] [repository-urls...]"));
   console.info("Options:");
   for (const [key, value] of Object.entries(ARGS_OPTIONS) as [
     string,
@@ -58,4 +58,8 @@ export function printHelp() {
     const flag = `${value.short ? `-${value.short}, ` : ""}--${key}`;
     console.info(`  ${flag}: ${value.description}`);
   }
+  console.info(
+    "Repository urls must be remote:",
+    code("https://, ssh://, git:// or user@host:path"),
+  );
 }

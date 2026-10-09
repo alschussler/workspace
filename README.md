@@ -2,7 +2,7 @@
 
 Create workspaces combining multiple repositories.
 
-`workspace` puts every repository you list into a single folder, either as **git submodules** of a new repository or as plain **clones**.
+`workspace` puts every remote repository you list into a single folder, either as **git submodules** of a new repository or as plain **clones**.
 
 ## Installation
 
@@ -14,12 +14,23 @@ npm install -g https://github.com/alschussler/workspace.git --install-links
 ## Usage
 
 ```bash
-workspace [options] [repositories...]
+workspace [options] [repository-urls...]
 ```
 
-Repositories can be passed as command-line arguments, read from a configuration file, or both.
+Repository urls can be passed as command-line arguments, read from a configuration file, or both.
 
-Only remote urls are accepted: `https://`, `http://`, `ssh://`, `git://` or the scp-like `user@host:path`. Local paths and `file://` urls are rejected.
+### Repository urls
+
+Only remote repository urls are accepted:
+
+| Format                       | Example                            |
+| ---------------------------- | ---------------------------------- |
+| `https://` / `http://`       | `https://github.com/org/api.git`   |
+| `ssh://` (also `git+ssh://`) | `ssh://git@github.com/org/api.git` |
+| `git://`                     | `git://example.com/org/api.git`    |
+| scp-like `[user@]host:path`  | `git@github.com:org/api.git`       |
+
+Local paths (`/path/to/repo`, `./repo`, `~/repo`) and `file://`, `ftp://` urls are rejected. All repositories are validated before anything is created, so a single invalid url stops the run with exit code `1` and leaves the workspace folder untouched.
 
 ### Modes
 
@@ -97,23 +108,24 @@ The configuration file uses JSON. `workspace --init` writes a template, and [`wo
 | -------------- | --------------------------------------------------------------------------- |
 | `mode`         | `clone` or `submodule`                                                      |
 | `dir`          | Workspace folder, relative paths are resolved from the config file's folder |
-| `repositories` | List of repository urls or `{ url, path?, branch? }` objects                |
+| `repositories` | List of remote repository urls or `{ url, path?, branch? }` objects         |
 
 ### Repository Options
 
-| Field    | Description                                                         |
-| -------- | ------------------------------------------------------------------- |
-| `url`    | Remote repository url                                               |
-| `path`   | Folder inside the workspace (default: the repository name)          |
-| `branch` | Branch to check out (`git clone --branch` / `git submodule add -b`) |
+| Field    | Description                                                                                                          |
+| -------- | -------------------------------------------------------------------------------------------------------------------- |
+| `url`    | Remote repository url (see [Repository urls](#repository-urls))                                                      |
+| `path`   | Folder inside the workspace (default: the repository name from the url, e.g. `api` for `git@github.com:org/api.git`) |
+| `branch` | Branch to check out (`git clone --branch` / `git submodule add -b`)                                                  |
 
 ## How It Works
 
 1. **Resolves the settings**: loads `--config` or `<dir>/.workspace`. CLI options take precedence over the config file, and the repositories from both are combined
-2. **Creates the workspace folder** if it doesn't exist
-3. **Initializes git** in `submodule` mode when the folder isn't a repository yet
-4. **Adds each repository** in order, with `git clone` or `git submodule add`
-5. **Prints a summary**: a failed repository doesn't stop the others, and the exit code is `1` if any of them failed
+2. **Validates the repositories**: every url must be remote and each repository must target a different folder, otherwise nothing is created
+3. **Creates the workspace folder** if it doesn't exist
+4. **Initializes git** in `submodule` mode when the folder isn't a repository yet
+5. **Adds each repository** in order, with `git clone` or `git submodule add`
+6. **Prints a summary**: a failed repository doesn't stop the others, and the exit code is `1` if any of them failed
 
 ## Development
 
