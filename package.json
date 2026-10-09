@@ -1,0 +1,21 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "Create workspaces combining multiple repositories",
+  "type": "module",
+  "bin": "lib/index.js",
+  "scripts": {
+    "dev": "node src/index.ts",
+    "lint": "tsc --noEmit",
+    "build": "tsc",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "author": "alschussler",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "24.19.1",
+    "prettier": "3.9.9",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "mode": "submodule",
+  "dir": "./my-workspace",
+  "repositories": [
+    "git@github.com:org/api.git",
+    {
+      "url": "git@github.com:org/web.git",
+      "path": "apps/web",
+      "branch": "develop"
+    }
+  ]
+}
